@@ -7,7 +7,7 @@ from sqlalchemy import DateTime, Date
 from sqlalchemy import Re
 
 
-from datetime import datetime
+from datetime import datetime, timezone
 from datetime import date
 
 from passlib.context import CryptContext
@@ -22,7 +22,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class TimeStampMixin:
-    created_at: Mapped[datetime] = mapped_column(datetime, default=(datetime.timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(datetime, default=datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.timezone.utc,

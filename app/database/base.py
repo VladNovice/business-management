@@ -13,7 +13,7 @@ async def setup_database(database_url):
         await conn.run_sync(Base.metadata.create_all)
     return async_sessionmaker(engine, expire_on_commit=True)
 
-async def get_db_session(requests: Request) -> AsyncSession:
+async def get_db_session(requests: Request):
     session_maker = requests.app.state.db_sessionmaker
     async with session_maker() as session:
         yield session
