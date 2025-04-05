@@ -1,19 +1,20 @@
+# models.py
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import String, Integer, ForeignKey
-from sqlalchemy import DateTime, Date
-from sqlalchemy import Re
+from sqlalchemy import DateTime, Date, func
 
 
-from datetime import datetime, timezone
+
+from datetime import datetime, timezone 
 from datetime import date
 
 from passlib.context import CryptContext
 
 
-from database.base import Base
+from app.database.base import Base
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -22,16 +23,21 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class TimeStampMixin:
-    created_at: Mapped[datetime] = mapped_column(datetime, default=datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now()  # Значение по умолчанию при создании
+    )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.timezone.utc,
-        onupdate=datetime.timezone.utc,
+        DateTime(timezone=True),
+        server_default=func.now(),  # Добавлено значение по умолчанию
+        onupdate=func.now()         # Обновление при изменении записи
     )
 
 
 
 class User(Base, TimeStampMixin):
+    __tablename__ = "users"
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50))
     password_hash: Mapped[str] = mapped_column(String(128))
@@ -46,6 +52,7 @@ class User(Base, TimeStampMixin):
     
 
 class Project(Base, TimeStampMixin):
+    __tablename__ = "projects"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50))
     money_day: Mapped[int] = mapped_column(Integer)
@@ -53,8 +60,9 @@ class Project(Base, TimeStampMixin):
 
 
 class Revenue(Base, TimeStampMixin):
+    __tablename__ = "revenues"
     id: Mapped[int] = mapped_column(primary_key=True)
-    project_id: Mapped[int] = mapped_column(ForeignKey('project.id'))
+    project_id: Mapped[int] = mapped_column(ForeignKey('projects.id'))
     data: Mapped[datetime] = mapped_column(Date, nullable=False)
     amount: Mapped[int] = mapped_column(nullable=False)
 

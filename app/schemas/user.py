@@ -1,3 +1,4 @@
+# user.py
 from pydantic import BaseModel
 
 from decimal import Decimal
@@ -13,6 +14,7 @@ class UserCreate(UserBase):
 class UserResponce(UserBase):
     id: int
     created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode: True
