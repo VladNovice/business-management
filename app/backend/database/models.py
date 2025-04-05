@@ -39,9 +39,10 @@ class User(Base, TimeStampMixin):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50))
+    name: Mapped[str] = mapped_column(String(50), unique=True)  # Добавлена уникальность
     password_hash: Mapped[str] = mapped_column(String(128))
 
+    projects = relationship("Project", back_populates="owner")
 
 
     def set_password(self, password: str):
@@ -54,17 +55,27 @@ class User(Base, TimeStampMixin):
 class Project(Base, TimeStampMixin):
     __tablename__ = "projects"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50))
-    money_day: Mapped[int] = mapped_column(Integer)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)  # Добавлен индекс
+    name: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(String(500), nullable=True)
+    expected_daily_revenue: Mapped[int] = mapped_column(Integer, nullable=True)  # Переименовано
+    currency: Mapped[str] = mapped_column(String(10), default='RUB')  # Пример для рубля
+    start_date: Mapped[date] = mapped_column(Date, default=date.today())
+    is_active: Mapped[bool] = mapped_column(default=True)
+    initial_balance: Mapped[int] = mapped_column(Integer, default=0)  # Начальный баланс
 
-
+    owner = relationship("User", back_populates="projects")
+    revenues = relationship("Revenue", back_populates="project")
 
 class Revenue(Base, TimeStampMixin):
     __tablename__ = "revenues"
     id: Mapped[int] = mapped_column(primary_key=True)
-    project_id: Mapped[int] = mapped_column(ForeignKey('projects.id'))
-    data: Mapped[datetime] = mapped_column(Date, nullable=False)
-    amount: Mapped[int] = mapped_column(nullable=False)
+    project_id: Mapped[int] = mapped_column(ForeignKey('projects.id'), index=True)
+    date: Mapped[datetime] = mapped_column(Date, nullable=False, index=True)  # Индекс для быстрого поиска по дате
+    income: Mapped[int] = mapped_column(Integer, default=0)
+    expenses: Mapped[int] = mapped_column(Integer, default=0)
+    category: Mapped[str] = mapped_column(String(50), nullable=True)  # Новая колонка для категорий
+    comment: Mapped[str] = mapped_column(String(200), nullable=True)
 
     project = relationship("Project", back_populates="revenues")
 
