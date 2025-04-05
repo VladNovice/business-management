@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # project imports
 from database.models import User
 from schemas.user import UserCreate, UserResponce
-
+from database.base import get_db_session
 
 
 
@@ -17,7 +17,7 @@ user_router = APIRouter(prefix='/users', tags=['users'])
 @user_router.post("/registred",response_model=UserResponce)
 async def register_user(
     user_data: UserCreate,
-    db: AsyncSession = Depends(???),
+    db: AsyncSession = Depends(get_db_session),
 
 ):
     existing_user = await db.execute
