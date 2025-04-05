@@ -14,7 +14,7 @@ from datetime import date
 from passlib.context import CryptContext
 
 
-from app.database.base import Base
+from app.backend.database.base import Base
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

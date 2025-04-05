@@ -8,10 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 # project imports
-from app.database.models import User
-from app.schemas.user import UserCreate, UserResponce, Token
-from app.database.base import get_db_session
-from app.core.security import verify_password, status, create_access_token, timedelta, ACCESS_TOKEN_EXPIRE_MINUTES, get_password_hash
+from app.backend.database.models import User
+from app.backend.schemas.user import UserCreate, UserResponce, Token
+from app.backend.database.base import get_db_session
+from app.backend.core.security import verify_password, status, create_access_token, timedelta, ACCESS_TOKEN_EXPIRE_MINUTES, get_password_hash
 
 # other 
 

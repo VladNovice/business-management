@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
-from app.database.base import setup_database
-from app.core.config import Config as cfg
-from app.api.routers.users import user_router
+from app.backend.database.base import setup_database
+from app.backend.core.config import Config as cfg
+from app.backend.api.routers.users import user_router
 
 from contextlib import asynccontextmanager
 
