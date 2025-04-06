@@ -37,6 +37,7 @@ async def register_user(
             detail="Юзернейм уже занят"
         )
     
+    
     new_user = User(
         name=user_data.name,
         password_hash=get_password_hash(user_data.password)

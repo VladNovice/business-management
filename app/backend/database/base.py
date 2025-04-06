@@ -1,7 +1,9 @@
 # base.py
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.ext.asyncio import AsyncSession
+
+
+
 
 from fastapi import Request
 
@@ -18,3 +20,4 @@ async def get_db_session(requests: Request):
     session_maker = requests.app.state.db_sessionmaker
     async with session_maker() as session:
         yield session
+
