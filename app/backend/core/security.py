@@ -1,5 +1,5 @@
 # security.py
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -29,15 +29,15 @@ def get_password_hash(password: str):
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-oauth2_scheme = OAuth2PasswordBearer("/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -60,10 +60,15 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db_session)
 ):
-    token_data = decode_access_token(token)
-
-    result = await db.execute(select(User).where(User.name == token_data.username))
-    user = result.scalars().first()
-    if not user:
+    try:
+        token_data = decode_access_token(token)
+        print(f"Decoded token data: {token_data}")
+        result = await db.execute(select(User).where(User.name == token_data.username))
+        user = result.scalars().first()
+        if not user:
+            print("User not found in database")
+            raise credentials_exception
+        return user
+    except Exception as e:
+        print(f"Auth error: {str(e)}")
         raise credentials_exception
-    return user
